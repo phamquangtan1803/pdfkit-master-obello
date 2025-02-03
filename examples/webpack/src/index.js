@@ -10,6 +10,7 @@ import testImageURL from './lazy-assets/test.jpeg';
 // bundle font and image files and register them in the virtual fs
 import './registerStaticFiles.js';
 import blobStream from 'blob-stream';
+import { createPDF } from './createPdf.js';
 var lorem =
   'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Etiam in suscipit purus. Vestibulum ante ipsum primis in faucibus orci luctus et ultrices posuere cubilia Curae; Vivamus nec hendrerit felis. Morbi aliquam facilisis risus eu lacinia. Sed eu leo in turpis fringilla hendrerit. Ut nec accumsan nisl. Suspendisse rhoncus nisl posuere tortor tempus et dapibus elit porta. Cras leo neque, elementum a rhoncus ut, vestibulum non nibh. Phasellus pretium justo turpis. Etiam vulputate, odio vitae tincidunt ultricies, eros odio dapibus nisi, ut tincidunt lacus arcu eu elit. Aenean velit erat, vehicula eget lacinia ut, dignissim non tellus. Aliquam nec lacus mi, sed vestibulum nunc. Suspendisse potenti. Curabitur vitae sem turpis. Vestibulum sed neque eget dolor dapibus porttitor at sit amet sem. Fusce a turpis lorem. Vestibulum ante ipsum primis in faucibus orci luctus et ultrices posuere cubilia Curae;\nMauris at ante tellus. Vestibulum a metus lectus. Praesent tempor purus a lacus blandit eget gravida ante hendrerit. Cras et eros metus. Sed commodo malesuada eros, vitae interdum augue semper quis. Fusce id magna nunc. Curabitur sollicitudin placerat semper. Cras et mi neque, a dignissim risus. Nulla venenatis porta lacus, vel rhoncus lectus tempor vitae. Duis sagittis venenatis rutrum. Curabitur tempor massa tortor.';
 
@@ -91,7 +92,6 @@ waitForData(doc)
   .then(dataUrl => {
     // display the document in the iframe to the right
     iframe.src = dataUrl;
-    downloadPDF(doc);
   })
   .catch(error => {
     console.log(error);
@@ -99,26 +99,11 @@ waitForData(doc)
 doc.end();
 `;
 
-function downloadPDF(doc) {
-  console.log('downloadPDF');
-  const stream = doc.pipe(blobStream());
-  stream.on('finish', function() {
-    const blob = stream.toBlob('application/pdf');
-    console.log('blob', blob);
-    const url = URL.createObjectURL(blob);
-    const a = document.createElement('a');
-    a.href = url;
-    a.download = 'document-hihi.pdf';
-    document.body.appendChild(a);
-    a.click();
-    document.body.removeChild(a);
-    URL.revokeObjectURL(url);
-  });
-}
+
 
 function executeFn(code, PDFDocument, lorem, waitForData, iframe) {
-  var fn = new Function('PDFDocument', 'lorem', 'waitForData', 'iframe', 'downloadPDF', code);
-  fn(PDFDocument, lorem, waitForData, iframe, downloadPDF);
+  var fn = new Function('PDFDocument', 'lorem', 'waitForData', 'iframe', code);
+  fn(PDFDocument, lorem, waitForData, iframe);
 }
 
 var editor = ace.edit('editor');
@@ -133,8 +118,10 @@ editor
 var iframe = document.querySelector('iframe');
 var downloadButton = document.getElementById('download');
 
-downloadButton.addEventListener('click', function() {
+downloadButton.addEventListener('click', async function() {
   console.log('downloadButton clicked');
+  await createPDF("93fc730a44fa4846a02b6aefb36f7632");
+
   executeFn(initialFnCode, PDFDocument, lorem, waitForData, iframe);
 });
 

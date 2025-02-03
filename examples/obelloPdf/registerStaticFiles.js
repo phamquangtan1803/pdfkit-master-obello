@@ -1,8 +1,8 @@
 // the fs here is not node fs but the provided virtual one
 import fs from 'fs';
 // the content file is returned as is (webpack is configured to load *.afm files as asset/source)
-import Courier from 'pdfkit/js/data/Courier.afm';
-import CourierBold from 'pdfkit/js/data/Courier-Bold.afm';
+// import Courier from 'pdfkit/js/data/Courier.afm';
+// import CourierBold from 'pdfkit/js/data/Courier-Bold.afm';
 
 async function registerBinaryFiles(ctx) {
   const keys = ctx.keys();
@@ -35,5 +35,5 @@ import('pdfkit/js/data').then(module => {
 });
 
 // register files imported directly
-fs.writeFileSync('data/Courier.afm', Courier);
-fs.writeFileSync('data/Courier-Bold.afm', CourierBold);
+// fs.writeFileSync('data/Courier.afm', Courier);
+// fs.writeFileSync('data/Courier-Bold.afm', CourierBold);

@@ -16,20 +16,10 @@ export async function createPDF(templateSizeID) {
     const stream = blobStream();
 
     // Pass the stream to the PDF generator
-    await generatePDF(data, stream);
-
+    const pdfBlob = await generatePDF(data, stream);
+    console.log('pdfBlob', pdfBlob);
     // When the stream is finished, create a blob URL and download it
-    stream.on("finish", function () {
-      const blob = stream.toBlob("application/pdf");
-      const url = URL.createObjectURL(blob);
-      const a = document.createElement("a");
-      a.href = url;
-      a.download = `generated2-${Date.now()}.pdf`;
-      document.body.appendChild(a);
-      a.click();
-      document.body.removeChild(a);
-      URL.revokeObjectURL(url);
-    });
+  
 
     console.log("PDF generation initiated.");
   } catch (error) {
